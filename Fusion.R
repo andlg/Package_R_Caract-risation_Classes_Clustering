@@ -8,6 +8,9 @@ library("FactoMineR")
 library("factoextra") 
 library(ggfortify)
 library(reshape2)
+library(MASS)
+library(fields)
+library(biganalytics)
 
 
 
@@ -20,7 +23,7 @@ categorisation = function(df, var_act, var_illus, var_grp){
   
   #creation de l'instance
   instance = list()
-  #Données 
+  #Donn?es 
   instance$data = df
   #Variables actives
   if(length(data.frame(var_act)) == 1){rename.variable(data.frame(var_act),colnames(data.frame(var_act)) , "var_act")}
@@ -40,21 +43,195 @@ categorisation = function(df, var_act, var_illus, var_grp){
   return(instance)
 }
 
-#On surcharge la méthode print
+#On surcharge la m?thode print
 print.categorisation = function(obj){
   cat("variables actives: ", obj$act, "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
   cat("variables illustratives: ", obj$illus, "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
   cat("Nombre de groupes: ", length(obj$n_grp), "\n")
 }
 
-#On surcharge la méthode is
+#On surcharge la mÃ©thode summary
+summary.categorisation = function(obj){
+  return(print(obj))
+}
+
+#On surcharge la m?thode is
 is.categorisation = function(obj){
   return(class(obj) == "categorisation")
 }
 
-#----------------------------------Fonctions pour la caractérisation univariée--------------------------------------------
+#----------------------------------Fonctions pour la caract?risation univari?e--------------------------------------------
 ######AXELLE##############################################################
+#source: http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
+correlation.categorisation = function(x,y){
+  g = length(unique(y)) #nb groupes
+  n = length(x) #nb obs
+  moy = mean(x) #moyenne generale
+  
+  
+  sct = sum((x-moy)^2) #variabilitÃ© totale
+  ng = table(y) #effectifs conditionnels
+  mg = tapply(x,y,mean) #moyennes conditionnelles
+  #variabilitÃ© inter
+  sce = sum(ng * (mg - moy)^2)
+  
+  #vecteur moyennes + rapport correlation
+  cor = c(mg,100.0*sce/sct)
+  #nommer les Ã©lements du vecteur
+  names(cor) = c(paste("G",1:g),"% epl.")
+  return(cor)
+}
 
+
+corr.categorisation = function(obj, illus = TRUE){ #illus=TRUE --> on prends en compte les var illus
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  if(!is.logical(illus)){
+    stop("L'argument illus n'est pas de type logical")
+  }
+  
+  
+  if(!illus | nrow(obj$illus)==0){
+    my_data = obj$act
+  }else{
+    my_data = cbind(obj$act, obj$illus)
+  }
+  var_grp = obj$grp
+  df_quanti = as.data.frame(obj$data[obj$var_grp])
+  col = colnames(my_data) #nom des colonnes
+  for (i in 1:ncol(my_data)){
+    var = col[i]
+    if(is.numeric(my_data[,var])){ #on recupere les variables quanti
+      df_quanti[var] = my_data[,var]
+    }
+  }
+  col_quanti = colnames(df_quanti)
+  if(length(col_quanti)==0){
+    return(NULL)
+  }
+  return(sapply(my_data[col_quanti],correlation.categorisation,y=var_grp))
+}
+
+#V de Cramer
+test_khi2 = function(x, y){
+  if(length(x) != length(y)){
+    return(NULL)
+  } else{
+    eff_obs = table(x,y)
+    eff_theo = matrix(nrow = nrow(eff_obs), ncol = ncol(eff_obs))
+    tab_khi = matrix(nrow = nrow(eff_obs), ncol = ncol(eff_obs))
+    tot = sum(eff_obs)
+    for (i in 1:nrow(eff_obs)) {
+      tot_ligne = sum(eff_obs[i,])
+      for (j in 1:ncol(eff_obs)) {
+        tot_col = sum(eff_obs[, j])
+        eff_theo[i, j] = (tot_col * tot_ligne) / tot
+        tab_khi[i, j] = (eff_obs[i,j]-eff_theo[i,j])^2 / eff_theo[i, j]
+      }
+    }
+    khi2 = sum(tab_khi)
+    ddl = min((nrow(tab_khi)-1),(ncol(tab_khi)-1))
+    p_value = pchisq(khi2, ddl, lower.tail = FALSE)
+    cramer = sqrt(khi2/(ddl*length(y)))
+    result = c(khi2, ddl, p_value, cramer)
+    names(result) = c("khi2","ddl","p_value", "cramer")
+    return(result)
+  }
+}
+
+cramer.categorisation = function(obj, illus = TRUE){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  if(!is.logical(illus)){
+    stop("L'argument illus n'est pas de type logical")
+  }
+  
+  suppressWarnings(if(!illus | nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)}) 
+  
+  var_grp = obj$grp
+  df_quali = as.data.frame(obj$data[obj$var_grp])
+  col = colnames(my_data) #nom des colonnes
+  for (i in 1:ncol(my_data)) { 
+    var = col[i]
+    if(!is.numeric(my_data[,var])){ #on recupere les variables quanti
+      df_quali[var] = my_data[,var]
+    }
+  }
+  col_quali = colnames(df_quali)
+  if(length(col_quali)==0){
+    return(NULL)
+  }
+  cram = sapply(my_data[col_quali], test_khi2, y=var_grp)
+  return(cram)
+}
+
+#Valeur test
+vtest_quanti = function(x, y){ #pour les variables quantitatives
+  g = length(unique(y)) #nb groupes
+  n = length(x) #nb obs
+  moy = mean(x) #moyenne generale
+  ng = table(y) #effectifs conditionnels
+  mg = tapply(x,y,mean) #moyennes conditionnelles
+  var = var(x)
+  
+  vt = c((mg-moy)/sqrt(((n-ng)/(n-1))*(var/ng)))
+  #print((mg-moy))
+  names(vt) = c(paste("G",1:g, "vt"))
+  return(vt)
+}
+
+vtest_quali=function(x,y){ #pour les variables qualitatives
+  g = length(unique(y)) #nb groupes
+  n = length(x) #nb obs
+  pl_perc = lprop(table(y,x), percent = TRUE)
+  pl=colSums(table(y,x))
+  vt=matrix(nrow = g, ncol = ncol(lprop(table(y,x)))-1)
+  colnames(vt) = colnames(pl_perc)[-ncol(lprop(table(y,x)))]
+  row.names(vt) = rownames(pl_perc)[-nrow(lprop(table(y,x)))]
+  for (i in 1:g) {
+    for (j in 1:ncol(vt)) {
+      vt[i,j] = sqrt(pl[j]) * ((pl_perc[i,j]/100-pl_perc[g+1,j]/100)/sqrt(((n-pl[j])/(n-1))*pl_perc[g+1,j]/100*(1-pl_perc[g+1,j]/100)))
+    }
+  }
+  return(vt)
+}
+
+#GENERALISATION VTEST POUR LES DEUX TYPES
+vtest.categorisation = function(obj, illus = TRUE){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  if(!is.logical(illus)){
+    stop("L'argument illus n'est pas de type logical")
+  }
+  
+  suppressWarnings(if(!illus | nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)})
+  var_grp = obj$grp
+  df_quanti = as.data.frame(obj$data[obj$var_grp]) 
+  df_quali = as.data.frame(obj$data[obj$var_grp])
+  rename.variable(data.frame(df_quali), colnames(data.frame(df_quali)), "var_grp")
+  #print(df_quali)
+  col = colnames(my_data) #nom des colonnes
+  #print(col)
+  for (i in 1:ncol(my_data)) { 
+    var = col[i]
+    if(is.numeric(my_data[,var])){ #on recupere les variables quanti
+      df_quanti[var] = my_data[,var]
+    } else{
+      df_quali[var] = my_data[,var] #on recupere les variables quali
+    }
+  }
+  col_quali = colnames(df_quali)
+  vt_quali = sapply(my_data[,col_quali], vtest_quali, y=var_grp) 
+  col_quanti = colnames(df_quanti) 
+  vt_quanti = sapply(my_data[col_quanti], vtest_quanti, y=var_grp)
+  vt = list(vt_quanti, vt_quali)
+  if(length(vt[[1]]) == 0){vt = vt[[2]]}
+  if(length(vt[[2]]) == 0){vt = vt[[1]]}
+  return(vt)
+}
 
 #########################################################################
 
@@ -89,15 +266,15 @@ calculs_uni = function(col, cluster){
     moy = mean(col) #moyenne generale
     
     
-    sct = sum((col-moy)^2) #variabilité totale
+    sct = sum((col-moy)^2) #variabilit? totale
     ng = table(cluster) #effectifs conditionnels
     mg = tapply(col,cluster,mean) #moyennes conditionnelles
-    #variabilité inter
+    #variabilit? inter
     sce = sum(ng * (mg - moy)^2)
     
     #vecteur moyennes + rapport correlation
     cor = c(mg,100.0*sce/sct)
-    #nommer les élements du vecteur
+    #nommer les ?lements du vecteur
     names(cor) = c(paste("G",1:g),"% epl.")
     return(cor)
   }
@@ -263,7 +440,7 @@ fun_acp<-function(act,illu,cluster){
 graph_uni_quali<-function(df,col,clust,profil){
   
   #bar <- ggplot (dfpack, aes(x = clust, fill = col)) 
-  #bar + geom_bar (position = "stack") # précise que les ZAU sont "empilées"
+  #bar + geom_bar (position = "stack") # pr?cise que les ZAU sont "empil?es"
   if (is.numeric(df[,col])){
     graph_uni_quanti(df,df[,col],clust)
   }else{
@@ -286,7 +463,7 @@ graph_uni_quali<-function(df,col,clust,profil){
 graph_uni_quanti<-function(df,col,clust){
   c<-as.character(names(col))
   #bar <- ggplot (dfpack, aes(x = clust, fill = col)) 
-  #bar + geom_bar (position = "stack") # précise que les ZAU sont "empilées"
+  #bar + geom_bar (position = "stack") # pr?cise que les ZAU sont "empil?es"
   ggplot(df, aes(clust,col)) +
     geom_boxplot()
   
@@ -312,6 +489,143 @@ sortie_graph<-function(obj,type,profil="l"){
   }
 }
 
+#--------------------------------------ADL-------------------------------------------------------
+#Source: http://eric.univ-lyon2.fr/~ricco/tanagra/fichiers/fr_Tanagra_LDA_MASS_R.pdf
+adl.categorisation = function(obj){
+  var_grp = obj$grp
+  df_quanti = as.data.frame(obj$data[obj$var_grp])
+  col = colnames(obj$act) #nom des colonnes
+  for (i in 1:ncol(obj$act)){
+    var = col[i]
+    if(is.numeric(obj$act[,var])){ #on recupere les variables quanti
+      df_quanti[var] = obj$act[,var]
+    }
+  }
+  col_quanti = colnames(df_quanti)
+  if(length(col_quanti)==0){
+    return(NULL)
+  }
+  
+  my_data = cbind(obj$act[col_quanti], grp = obj$grp)
+  split = sort(sample(nrow(my_data), nrow(my_data)*0.75))
+  train = my_data[split, ]
+  test = my_data[-split,]
+  
+  Xtrain = train[, -ncol(my_data)]
+  ytrain = as.factor(train[, ncol(my_data)])
+  Xtest = test[, -ncol(my_data)]
+  ytest = as.factor(test[, ncol(my_data)])
+  
+  my_adl = lda(grp ~ ., data = train)
+  coef_adl = my_adl$scaling
+  pred = predict(my_adl, newdata = Xtest)
+  mc = table(ytest, pred$class)
+  
+  p = ncol(Xtrain)
+  n = nrow(train)
+  k = nlevels(ytrain)
+  
+  #matrice de co-variance totale
+  m_tot = cov(Xtrain)
+  #matrice de co-variace intra: a chaque fois on enleve la variable que l'on cherche a evaluer
+  m_intra = (1.0/(n-k))*Reduce("+",lapply(levels(ytrain),function(niveau){(sum(ytrain==niveau)-1)*cov(Xtrain[ytrain==niveau,])})) #reduce applique de maniere iterative une fonction
+  
+  WITprim = (n-k)/n*m_intra
+  TOTprim = (n-1)/n*m_tot
+  
+  #lambda de Wilks
+  LW = det(WITprim)/det(TOTprim)
+  
+  ddlSuppNum = k - 1
+  ddlSuppDenom = n - k - p + 1
+  FTest = numeric(p)
+  pvalue = numeric(p)
+  
+  for (j in 1:p){
+    #Lambda
+    LWvar = det(WITprim[-j,-j])/det(TOTprim[-j,-j])
+    #F
+    FTest[j] = ddlSuppDenom / ddlSuppNum * (LWvar/LW - 1)
+    #pvalue
+    pvalue[j] = pf(FTest[j],ddlSuppNum,ddlSuppDenom,lower.tail=FALSE)
+  }
+  out = data.frame(var=colnames(Xtrain),FValue=FTest,pvalue=round(pvalue,6))
+  
+  
+  r = list(coef_adl, mc, out)
+  names(r) = c("Coef LDA", "confusion_matrix", "eval")
+  return(r)
+}
+
+
+#--------------------Silhouette---------------------------------------
+#Le coefficient de silhouette varie entre -1 (pire classification) et 1 (meilleure classification)
+sil.categorisation = function(obj, graph = FALSE){
+  var_grp = obj$grp #cluster
+  my_data = obj$act
+  df_quanti = as.data.frame(obj$data[obj$var_grp])
+  col = colnames(my_data) #nom des colonnes
+  for (i in 1:ncol(my_data)){
+    var = col[i]
+    if(is.numeric(my_data[,var])){ #on recupere les variables quanti
+      df_quanti[var] = my_data[,var]
+    }
+  }
+  col_quanti = colnames(df_quanti)
+  my_data = obj$act[col_quanti]
+  
+  m_dist = rdist(my_data) #matrice des distances
+  m_cplt = cbind(m_dist, obj$grp) #matrice des distances avec les clusters
+  sil = c()
+  for (i in 1:length(var_grp)) { #pour chaque point
+    cluster = var_grp[i]
+    a = list() 
+    for (j in 1:(ncol(m_cplt)-1)) {
+      ik = length(var_grp[var_grp==cluster])
+      ai = 0
+      if(m_cplt[j,ncol(m_cplt)] == cluster){
+        a = append(a, m_cplt[i,j])
+      }
+      ai = sum(unlist(a))
+      if(ik != 0){
+        ai = ai * (1/(ik-1))
+      }
+      if (is.na(ai)) {
+        ai = 0
+      }
+      b_ = list()
+      bi = 0
+      for (k in 1:length(unique(var_grp))) {
+        b = 0
+        if(cluster != unique(var_grp)[k]){
+          m = m_cplt[m_cplt[,ncol(m_cplt)]==unique(var_grp)[k], -ncol(m_cplt)]
+          ik_ = length(var_grp[var_grp==unique(var_grp)[k]])
+          if(ncol(as.matrix(m))==1){m = rbind(0, m)}
+          b = colSums(m)[i]/ik_
+          b_ = append(b_, b)
+        }
+      }
+      bi = min(unlist(b_))
+    }
+    sil[i] = (bi-ai)/(max(bi,ai))
+    if(is.na(sil[i])){
+      sil[i] = 0
+    }
+  }
+  out = data.frame(cbind(sil,var_grp))
+  colnames(out) = c("sil", "cluster")
+  
+  p = ggplot(data=out ,aes(x=sil, y=rownames(out))) +
+    geom_bar(stat="identity", color = "black", fill = "steelblue") +
+    xlim(-1, 1) +
+    #geom_text(aes(label=sil), vjust=1.6, color="white", size=3.5) +
+    theme_minimal()
+  
+  #AFFICHER GRAPHE
+  return(out)
+}
+
+
 
 #--------------------Test Antho---------------------------------------
 setwd("/Volumes/KINGSTON/M2/Prog R/Projet/")
@@ -326,7 +640,7 @@ res.kmeans<-kmeans(d.classif,centers=2,nstart=5)
 res.kmeans<-kmeans(d.classif,centers=3,nstart=5)
 
 
-#Création d'un objet en distinguant quali et quanti 
+#Cr?ation d'un objet en distinguant quali et quanti 
 objet<-categorisation(data.reduite,d.classif,data.illu,res.kmeans$cluster)
 
 objet$act
@@ -383,7 +697,7 @@ sortievtest$graph
 
 
 ###################--------------------------------Test--------------------------------------------
-#import des données
+#import des donn?es
 datas = read_excel("auto.xlsx")
 autos = datas[,2:8]
 row.names(autos) = datas$Modele
