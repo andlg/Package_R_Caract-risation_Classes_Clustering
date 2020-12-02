@@ -61,37 +61,7 @@ is.categorisation = function(obj){
 
 #Rapport de correlation
 #source: http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
-correlation.categorisation = function(x,y){
-  g = length(unique(y)) #nb groupes
-  n = length(x) #nb obs
-  moy = mean(x) #moyenne generale
-  
-  
-  sct = sum((x-moy)^2) #variabilité totale
-  ng = table(y) #effectifs conditionnels
-  mg = tapply(x,y,mean) #moyennes conditionnelles
-  #variabilité inter
-  sce = sum(ng * (mg - moy)^2)
-  
-  #vecteur moyennes + rapport correlation
-  cor = c(mg,100.0*sce/sct)
-  #nommer les élements du vecteur
-  names(cor) = c(paste("G",1:g),"% epl.")
-  return(cor)
-}
 
-corr.categorisation = function(obj, var_grp){
-  df_quanti = as.data.frame(obj$data[obj$var_grp])
-  col = colnames(obj$data[obj$act]) #nom des colonnes
-  for (i in 1:ncol(obj$data[obj$act])) { 
-    var = col[i]
-    if(is.numeric(obj$data[,var])){ #on recupere les variables quanti
-      df_quanti[var] = obj$data[,var]
-    }
-  }
-  col_quanti = colnames(df_quanti)
-  return(sapply(obj$data[col_quanti],correlation.categorisation,y=var_grp))
-}
 
 #Test du khi2
 #Verifier les sorties suivant quanti / quali ??? et regarder si des fonctions inutiles
@@ -137,9 +107,10 @@ calculs_uni = function(col, cluster){
 
 univariee.categorisation = function(obj){
   #sortie_uni = sapply(obj$data[obj$act], calculs_uni, cluster=obj$grp)
-  sortie_uni = sapply(obj$data, calculs_uni, cluster=obj$grp)
+  sortie_uni = lapply(obj$data, calculs_uni, cluster=obj$grp)
   return(sortie_uni)
 }
+
 
 #Valeur test
 vtest_quanti = function(x, y){ #pour les variables quantitatives
@@ -289,17 +260,25 @@ fun_acp<-function(act,illu,cluster){
   
 }
 
-graph_uni_quali<-function(df,col,clust){
+graph_uni_quali<-function(df,col,clust,profil){
   
   #bar <- ggplot (dfpack, aes(x = clust, fill = col)) 
   #bar + geom_bar (position = "stack") # précise que les ZAU sont "empilées"
   if (is.numeric(df[,col])){
     graph_uni_quanti(df,df[,col],clust)
   }else{
-  ggplot(df, aes_string(x = clust,fill = col)) +
-    geom_bar(position = "stack" ) +
-    #xlab("Cluster")
-      xlab(class(df[,col]))
+    if(profil=="l"){
+      ggplot(df, aes_string(x = clust,fill = col)) +
+        geom_bar(position = "stack" ) +
+        #xlab("Cluster")
+        xlab(class(df[,col]))
+    }else if (profil=="c"){
+      ggplot(df, aes_string(x = col,fill = clust)) +
+        geom_bar(position = "stack" ) +
+        #xlab("Cluster")
+        xlab(class(df[,clust]))
+    }
+  
   }
   
 }
@@ -315,10 +294,10 @@ graph_uni_quanti<-function(df,col,clust){
 
 
 
-sortie_graph<-function(obj,type){
+sortie_graph<-function(obj,type,profil="l"){
   if (type=="illus"){
     df_quali<-cbind(obj$data,grp=obj$grp)
-    graph_uni_quali<-lapply(obj$illus , graph_uni_quali,df=df_quali,clust=as.factor(df_quali$grp))
+    graph_uni_quali<-lapply(obj$illus , graph_uni_quali,df=df_quali,clust=as.factor(df_quali$grp),profil=profil)
     names(graph_uni_quali)<-obj$illus
     return(graph_uni_quali)
   }
@@ -370,12 +349,19 @@ gr<-sortie_graph(objet,"illus")
 gr$code_du_domaine
 gr$femmes
 
+#Exemple graphique uni variable illus pour chaque cluster 
+gr<-sortie_graph(objet,"illus",profil = "c")
+#Affichage grapphique domaine/cluster
+gr$code_du_domaine
+gr$femmes
+
 #Exemple graphique uni variable active
 gr2<-sortie_graph(objet,"act")
 gr2
 
 categouni<-univariee.categorisation(objet)
-categouni
+categouni$code_du_domaine
+categouni$taux_dinsertion
 #on ne peut pas utiliser $ --> y a t il une solution ? 
 
 #Valeur test 
