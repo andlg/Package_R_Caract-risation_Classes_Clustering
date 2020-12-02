@@ -53,6 +53,11 @@ is.categorisation = function(obj){
 }
 
 #----------------------------------Fonctions pour la caractérisation univariée--------------------------------------------
+######AXELLE##############################################################
+
+
+#########################################################################
+
 
 #Rapport de correlation
 #source: http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
@@ -89,6 +94,7 @@ corr.categorisation = function(obj, var_grp){
 }
 
 #Test du khi2
+#Verifier les sorties suivant quanti / quali ??? et regarder si des fonctions inutiles
 calculs_uni = function(col, cluster){
   if (length(col)==length(cluster) && is.factor(col)){
     f<-length(levels(col))-1
@@ -264,7 +270,7 @@ sortievt[[1]]
 
 #--------------------------------------SORTIES GRAPHIQUES-------------------------------------------------------
 
-
+#ajouter cos2 contrib ...?????
 fun_acp<-function(act,illu,cluster){
   #https://huboqiang.cn/2016/03/03/RscatterPlotPCA
   res.pca<-PCA(act, scale.unit = TRUE, ncp = 5, graph = F)
@@ -373,6 +379,7 @@ categouni
 #on ne peut pas utiliser $ --> y a t il une solution ? 
 
 #Valeur test 
+#$groupe passer en argument ????
 sortievtest<-vtest.categorisation(objet,objet$grp)
 sortievtest$num
 sortievtest$graph
