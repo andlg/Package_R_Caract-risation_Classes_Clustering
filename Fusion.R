@@ -23,30 +23,23 @@ categorisation = function(df, var_act, var_illus, var_grp){
   
   #creation de l'instance
   instance = list()
-  #Donn?es 
   instance$data = df
-  #Variables actives
-  if(length(data.frame(var_act)) == 1){rename.variable(data.frame(var_act),colnames(data.frame(var_act)) , "var_act")}
-  #Variables illustratives
-  if(length(data.frame(var_illus)) == 1){rename.variable(data.frame(var_illus),colnames(data.frame(var_illus)) , "var_illus")}
-  #Nom des variables actives 
-  instance$act = colnames(data.frame(var_act))
-  #Nom des variables illustratives 
-  instance$illus = colnames(data.frame(var_illus))
-  #Label des clusters 
-  instance$n_grp = sort(unique(var_grp))
-  #Colonne des clusters
+  instance$act = data.frame(var_act)
+  instance$illus = data.frame(var_illus)
+  #colonne des clusters
   instance$grp = var_grp
+  #liste des clusters
+  instance$n_grp = sort(unique(var_grp))
   
   class(instance) = "categorisation"
   
   return(instance)
 }
 
-#On surcharge la m?thode print
+#On surcharge la méthode print
 print.categorisation = function(obj){
-  cat("variables actives: ", obj$act, "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
-  cat("variables illustratives: ", obj$illus, "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
+  cat("variables actives: ", colnames(obj$act), "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
+  cat("variables illustratives: ", colnames(obj$illus), "\n") #CELLE LIGNE NE MARCHE PAS QUAND ON A UNE SEUL VARIABLE!!!!
   cat("Nombre de groupes: ", length(obj$n_grp), "\n")
 }
 
@@ -55,117 +48,57 @@ summary.categorisation = function(obj){
   return(print(obj))
 }
 
-#On surcharge la m?thode is
+
+#On surcharge la méthode is
 is.categorisation = function(obj){
   return(class(obj) == "categorisation")
 }
 
 #----------------------------------Fonctions pour la caract?risation univari?e--------------------------------------------
-######AXELLE##############################################################
-#source: http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
-correlation.categorisation = function(x,y){
-  g = length(unique(y)) #nb groupes
-  n = length(x) #nb obs
-  moy = mean(x) #moyenne generale
-  
-  
-  sct = sum((x-moy)^2) #variabilité totale
-  ng = table(y) #effectifs conditionnels
-  mg = tapply(x,y,mean) #moyennes conditionnelles
-  #variabilité inter
-  sce = sum(ng * (mg - moy)^2)
-  
-  #vecteur moyennes + rapport correlation
-  cor = c(mg,100.0*sce/sct)
-  #nommer les élements du vecteur
-  names(cor) = c(paste("G",1:g),"% epl.")
-  return(cor)
-}
-
-
-corr.categorisation = function(obj, illus = TRUE){ #illus=TRUE --> on prends en compte les var illus
-  if(!is.categorisation(obj)){
-    stop("L'argument obj n'est pas de type categorisation")
-  }
-  if(!is.logical(illus)){
-    stop("L'argument illus n'est pas de type logical")
-  }
-  
-  
-  if(!illus | nrow(obj$illus)==0){
-    my_data = obj$act
-  }else{
-    my_data = cbind(obj$act, obj$illus)
-  }
-  var_grp = obj$grp
-  df_quanti = as.data.frame(obj$data[obj$var_grp])
-  col = colnames(my_data) #nom des colonnes
-  for (i in 1:ncol(my_data)){
-    var = col[i]
-    if(is.numeric(my_data[,var])){ #on recupere les variables quanti
-      df_quanti[var] = my_data[,var]
-    }
-  }
-  col_quanti = colnames(df_quanti)
-  if(length(col_quanti)==0){
-    return(NULL)
-  }
-  return(sapply(my_data[col_quanti],correlation.categorisation,y=var_grp))
-}
-
-#V de Cramer
-test_khi2 = function(x, y){
-  if(length(x) != length(y)){
-    return(NULL)
-  } else{
-    eff_obs = table(x,y)
-    eff_theo = matrix(nrow = nrow(eff_obs), ncol = ncol(eff_obs))
-    tab_khi = matrix(nrow = nrow(eff_obs), ncol = ncol(eff_obs))
-    tot = sum(eff_obs)
-    for (i in 1:nrow(eff_obs)) {
-      tot_ligne = sum(eff_obs[i,])
-      for (j in 1:ncol(eff_obs)) {
-        tot_col = sum(eff_obs[, j])
-        eff_theo[i, j] = (tot_col * tot_ligne) / tot
-        tab_khi[i, j] = (eff_obs[i,j]-eff_theo[i,j])^2 / eff_theo[i, j]
-      }
-    }
-    khi2 = sum(tab_khi)
-    ddl = min((nrow(tab_khi)-1),(ncol(tab_khi)-1))
-    p_value = pchisq(khi2, ddl, lower.tail = FALSE)
-    cramer = sqrt(khi2/(ddl*length(y)))
-    result = c(khi2, ddl, p_value, cramer)
+calculs_uni = function(col, cluster){
+  #print(is.numeric(col))
+  if (length(col)==length(cluster) && !is.numeric(col)){
+    f<-length(levels(col))-1
+    cl<-length(levels(as.factor(cluster)))-1
+    test<-suppressWarnings(chisq.test(cluster,col))
+    ddl<-test$parameter
+    denom<- n*ddl
+    khival<-test$statistic
+    cramer<-sqrt(khival/denom)
+    p_value<-test$p.value
+    
+    result = c(khival, ddl, p_value, cramer)
     names(result) = c("khi2","ddl","p_value", "cramer")
     return(result)
+    
+  }else {
+    g = length(unique(cluster)) #nb groupes
+    n = length(col) #nb obs
+    moy = mean(col) #moyenne generale
+    
+    sct = sum((col-moy)^2) #variabilit? totale
+    ng = table(cluster) #effectifs conditionnels
+    mg = tapply(col,cluster,mean) #moyennes conditionnelles
+    #variabilit? inter
+    sce = sum(ng * (mg - moy)^2)
+    
+    #vecteur moyennes + rapport correlation
+    cor = c(mg,100.0*sce/sct)
+    #nommer les ?lements du vecteur
+    names(cor) = c(paste("G",1:g),"% epl.")
+    return(cor)
   }
 }
 
-cramer.categorisation = function(obj, illus = TRUE){
-  if(!is.categorisation(obj)){
-    stop("L'argument obj n'est pas de type categorisation")
-  }
-  if(!is.logical(illus)){
-    stop("L'argument illus n'est pas de type logical")
-  }
-  
-  suppressWarnings(if(!illus | nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)}) 
-  
-  var_grp = obj$grp
-  df_quali = as.data.frame(obj$data[obj$var_grp])
-  col = colnames(my_data) #nom des colonnes
-  for (i in 1:ncol(my_data)) { 
-    var = col[i]
-    if(!is.numeric(my_data[,var])){ #on recupere les variables quanti
-      df_quali[var] = my_data[,var]
-    }
-  }
-  col_quali = colnames(df_quali)
-  if(length(col_quali)==0){
-    return(NULL)
-  }
-  cram = sapply(my_data[col_quali], test_khi2, y=var_grp)
-  return(cram)
+
+univariee.categorisation = function(obj){
+  #sortie_uni = sapply(obj$data[obj$act], calculs_uni, cluster=obj$grp)
+  my_data = cbind(obj$act, obj$illus)
+  sortie_uni = lapply(my_data, calculs_uni, cluster=obj$grp)
+  return(sortie_uni)
 }
+
+
 
 #Valeur test
 vtest_quanti = function(x, y){ #pour les variables quantitatives
@@ -199,7 +132,7 @@ vtest_quali=function(x,y){ #pour les variables qualitatives
 }
 
 #GENERALISATION VTEST POUR LES DEUX TYPES
-vtest.categorisation = function(obj, illus = TRUE){
+vtest.categorisation = function(obj){
   if(!is.categorisation(obj)){
     stop("L'argument obj n'est pas de type categorisation")
   }
@@ -207,7 +140,7 @@ vtest.categorisation = function(obj, illus = TRUE){
     stop("L'argument illus n'est pas de type logical")
   }
   
-  suppressWarnings(if(!illus | nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)})
+  suppressWarnings(nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)}
   var_grp = obj$grp
   df_quanti = as.data.frame(obj$data[obj$var_grp]) 
   df_quali = as.data.frame(obj$data[obj$var_grp])
@@ -230,122 +163,12 @@ vtest.categorisation = function(obj, illus = TRUE){
   vt = list(vt_quanti, vt_quali)
   if(length(vt[[1]]) == 0){vt = vt[[2]]}
   if(length(vt[[2]]) == 0){vt = vt[[1]]}
-  return(vt)
-}
-
-#########################################################################
-
-
-#Rapport de correlation
-#source: http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
-
-
-#Test du khi2
-#Verifier les sorties suivant quanti / quali ??? et regarder si des fonctions inutiles
-calculs_uni = function(col, cluster){
-  if (length(col)==length(cluster) && is.factor(col)){
-    f<-length(levels(col))-1
-    cl<-length(levels(as.factor(cluster)))-1
-    denom<- n*min(c(f,cl))
-    ddl<-f*cl
-    test<-chisq.test(cluster,col)
-    khival<-test$statistic
-    cramer<-sqrt(khival/denom)
-    p_value<-test$p.value
-    # return(chisq.test(cluster,col))
-    #return(cramer)
-    # return(table(cluster,col))
-    
-    result = c(khival, ddl, p_value, cramer)
-    names(result) = c("khi2","ddl","p_value", "cramer")
-    return(result)
-    
-  }else if (length(col)==length(cluster)){
-    g = length(unique(cluster)) #nb groupes
-    n = length(col) #nb obs
-    moy = mean(col) #moyenne generale
-    
-    
-    sct = sum((col-moy)^2) #variabilit? totale
-    ng = table(cluster) #effectifs conditionnels
-    mg = tapply(col,cluster,mean) #moyennes conditionnelles
-    #variabilit? inter
-    sce = sum(ng * (mg - moy)^2)
-    
-    #vecteur moyennes + rapport correlation
-    cor = c(mg,100.0*sce/sct)
-    #nommer les ?lements du vecteur
-    names(cor) = c(paste("G",1:g),"% epl.")
-    return(cor)
-  }
-  
-}
-
-
-univariee.categorisation = function(obj){
-  #sortie_uni = sapply(obj$data[obj$act], calculs_uni, cluster=obj$grp)
-  sortie_uni = lapply(obj$data, calculs_uni, cluster=obj$grp)
-  return(sortie_uni)
-}
-
-
-#Valeur test
-vtest_quanti = function(x, y){ #pour les variables quantitatives
-  g = length(unique(y)) #nb groupes
-  n = length(x) #nb obs
-  moy = mean(x) #moyenne generale
-  ng = table(y) #effectifs conditionnels
-  mg = tapply(x,y,mean) #moyennes conditionnelles
-  var = var(x)
-  
-  vt = c((mg-moy)/sqrt(((n-ng)/(n-1))*(var/ng)))
-  #print((mg-moy))
-  names(vt) = c(paste("G",1:g, "vt"))
-  return(vt)
-}
-
-vtest_quali=function(x,y){ #pour les variables qualitatives
-  g = length(unique(y)) #nb groupes
-  n = length(x) #nb obs
-  pl_perc = lprop(table(y,x), percent = TRUE)
-  pl=colSums(table(y,x))
-  vt=matrix(nrow = g, ncol = ncol(lprop(table(y,x)))-1)
-  colnames(vt) = colnames(pl_perc)[-ncol(lprop(table(y,x)))]
-  row.names(vt) = rownames(pl_perc)[-nrow(lprop(table(y,x)))]
-  for (i in 1:g) {
-    for (j in 1:ncol(vt)) {
-      vt[i,j] = sqrt(pl[j]) * ((pl_perc[i,j]/100-pl_perc[g+1,j]/100)/sqrt(((n-pl[j])/(n-1))*pl_perc[g+1,j]/100*(1-pl_perc[g+1,j]/100)))
-    }
-  }
-  return(vt)
-}
-
-#GENERALISATION VTEST POUR LES DEUX TYPES
-vtest.categorisation = function(obj, var_grp){
-  df_quanti = as.data.frame(obj$data[obj$var_grp]) 
-  df_quali = as.data.frame(obj$data[obj$var_grp])
-  rename.variable(data.frame(df_quali), colnames(data.frame(df_quali)), "var_grp")
-  #print(df_quali)
-  col = colnames(obj$data[obj$act]) #nom des colonnes
-  #print(col)
-  for (i in 1:ncol(obj$data[obj$act])) { 
-    var = col[i]
-    if(is.numeric(obj$data[,var])){ #on recupere les variables quanti
-      df_quanti[var] = obj$data[,var]
-    } else{
-      df_quali[var] = obj$data[,var] #on recupere les variables quali
-    }
-  }
-  col_quali = colnames(df_quali)
-  vt_quali = sapply(obj$data[,col_quali], vtest_quali, y=var_grp) 
-  col_quanti = colnames(df_quanti) 
-  vt_quanti = sapply(obj$data[col_quanti], vtest_quanti, y=var_grp)
-  vt = list(vt_quanti, vt_quali)
-  
+  #return(vt)
   graph<-graph_vtest(vt[[1]])
   
   
   return(list(num = vt,graph = graph))
+  
 }
 
 graph_vtest<-function(v){
@@ -355,9 +178,9 @@ graph_vtest<-function(v){
   rvt<-rvt[,order]
   
   rvt2<-data.frame(ID= as.vector(colnames(rvt)) #,
-                  # gr1=c(as.double( rvt[1,])),
-                  # gr2=c(as.double(rvt[2,]))
-                   )
+                   # gr1=c(as.double( rvt[1,])),
+                   # gr2=c(as.double(rvt[2,]))
+  )
   
   for(i in 1:nrow(rvt)) {                                   # Head of for-loop
     new <- as.double(rvt[i,])                      # Create new column
@@ -384,7 +207,7 @@ graph_vtest<-function(v){
     scale_y_continuous("")+
     theme_light()+
     #scale_color_manual(values= c("yellow", "blue"))+
-   # scale_fill_manual(values= c("yellow", "blue"))+
+    # scale_fill_manual(values= c("yellow", "blue"))+
     coord_radar()
   
   
@@ -404,11 +227,19 @@ coord_radar <- function (theta = "x", start = 0, direction = 1)
 }
 
 
+objet<-categorisation(data.reduite,data.reduite,NULL,res.kmeans$cluster)
+objet$data
+objet$grp
+
+sortieuni <-univariee.categorisation(objet)
+sortieuni
+
+sortievt<-vtest.categorisation(objet,objet$grp)
+sortievt$num
+sortievt[[2]]
+sortievt[[1]]
 
 #--------------------------------------SORTIES GRAPHIQUES-------------------------------------------------------
-
-
-
 graph_uni_quali<-function(df,col,clust,profil){
   
   #bar <- ggplot (dfpack, aes(x = clust, fill = col)) 
@@ -427,7 +258,7 @@ graph_uni_quali<-function(df,col,clust,profil){
         #xlab("Cluster")
         xlab(class(df[,clust]))
     }
-  
+    
   }
   
 }
@@ -450,7 +281,7 @@ fun_acp<-function(data,cluster){
   #supl<-which(sapply(data[,numillu], is.numeric) ==T)
   #supl<-as.numeric(supl)
   
- # data_acp<-cbind(data[,supl],data[,act])
+  # data_acp<-cbind(data[,supl],data[,act])
   
   #https://huboqiang.cn/2016/03/03/RscatterPlotPCA
   #res.pca<-PCA(data_acp,quanti.sup = 1, scale.unit = TRUE, ncp = 5, graph = F)
@@ -461,16 +292,16 @@ fun_acp<-function(data,cluster){
   var <- get_pca_var(res.pca) #Creation d'une variable "var" avec tous les resultats concernants les variables
   gvar<-fviz_pca_var(res.pca,col.var = "contrib",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel=T)
   
- 
+  
   ind <- get_pca_ind(res.pca) #Creation d'une variable "ind" avec tous les resultats concernants les variables
-#-------Version factoexra
-#ok#  gind<-fviz_pca_ind(res.pca, col.ind =cluster,geom.ind = "point")#graphique des individus selon leurs coordonnees et contribution 
+  #-------Version factoexra
+  #ok#  gind<-fviz_pca_ind(res.pca, col.ind =cluster,geom.ind = "point")#graphique des individus selon leurs coordonnees et contribution 
   #gvar<-autoplot(res.pca, data = act, colour = cluster)
   #gind<-  gvar<-autoplot(res.pca, data = act, colour = cluster, loadings=T)
   
-#ok#  gind2<-fviz_pca_ind(res.pca, col.ind =cluster)
+  #ok#  gind2<-fviz_pca_ind(res.pca, col.ind =cluster)
   
-#-------Version ggplot2
+  #-------Version ggplot2
   eig.val <- get_eigenvalue(res.pca) 
   pc1 <- res.pca$ind$coord[, 1] # indexing the first column
   pc2 <- res.pca$ind$coord[, 2] 
@@ -495,27 +326,32 @@ fun_acp<-function(data,cluster){
 sortie_graph<-function(obj,type,profil="l"){
   if (type=="illus"){
     df_quali<-cbind(obj$data,grp=obj$grp)
-    graph_uni_quali<-lapply(obj$illus , graph_uni_quali,df=df_quali,clust=as.factor(df_quali$grp),profil=profil)
-    names(graph_uni_quali)<-obj$illus
+    graph_uni_quali<-lapply(colnames(obj$illus) , graph_uni_quali,df=df_quali,clust=as.factor(df_quali$grp),profil=profil)
+    names(graph_uni_quali)<-colnames(obj$illus)
     return(graph_uni_quali)
   }
   if (type=="act"){
     df_quanti<-cbind(obj$data,grp=obj$grp)
-    graph_uni_quanti<-lapply(df_quanti[obj$act] , graph_uni_quanti,df=df_quanti,clust=as.factor(df_quanti$grp))
+    graph_uni_quanti<-lapply(df_quanti[colnames(obj$act)] , graph_uni_quanti,df=df_quanti,clust=as.factor(df_quanti$grp))
     #names(graph_uni_quanti)<-obj$act
     return(graph_uni_quanti)
   }
   if (type=="acp"){
-   # fun_acp(obj$data[obj$act],obj$data[obj$illus],obj$grp)
+    # fun_acp(obj$data[obj$act],obj$data[obj$illus],obj$grp)
     col_quanti<-which(sapply(obj$data, is.numeric) ==T)
     #fun_acp(obj$data,obj$act,obj$illus,obj$grp)
-    fun_acp(objet$data[,col_quanti],obj$grp)
+    fun_acp(obj$data[,col_quanti],obj$grp)
   }
 }
+
+
 
 #--------------------------------------ADL-------------------------------------------------------
 #Source: http://eric.univ-lyon2.fr/~ricco/tanagra/fichiers/fr_Tanagra_LDA_MASS_R.pdf
 adl.categorisation = function(obj){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
   var_grp = obj$grp
   df_quanti = as.data.frame(obj$data[obj$var_grp])
   col = colnames(obj$act) #nom des colonnes
@@ -726,7 +562,6 @@ objet$grp
 resacp<-sortie_graph(objet,"acp")
 resacp$var
 resacp$ind
-resacp$ind2
 
 #Exemple graphique uni variable illus pour chaque cluster 
 gr<-sortie_graph(objet,"illus")
@@ -756,9 +591,9 @@ sortievtest$num
 sortievtest$graph
 
 #plot_data_column = function (data, column,grp) {
- # ggplot(data, aes_string(x = grp,fill = column)) +
-  #  geom_bar(position = "stack" ) +
-   # xlab(column)
+# ggplot(data, aes_string(x = grp,fill = column)) +
+#  geom_bar(position = "stack" ) +
+# xlab(column)
 #}
 
 #dftry<-cbind(objet$data,grp=objet$grp)
@@ -776,11 +611,14 @@ autos.cr = scale(autos, center = T, scale = T)
 d.autos = dist(autos.cr)
 cah = hclust(d.autos, method="ward.D2")
 groupes.cah <- cutree(cah, k=4)
-my_clust = cbind(datas, groupes.cah)
+my_clust = cbind(datas[,-1], groupes.cah)
 
-cate = categorisation(my_clust, my_clust[,-12], NULL, my_clust$groupes.cah)
-corr.categorisation(cate, my_clust$groupes.cah)
-cramer.categorisation(cate, my_clust$groupes.cah)
-vtest.categorisation(cate, my_clust$groupes.cah)
-
-
+cate = categorisation(my_clust, my_clust[,1:7], my_clust[,7:11], my_clust$groupes.cah)
+print(cate)
+corr.categorisation(cate)
+cramer.categorisation(cate)
+test = vtest.categorisation(cate)
+test$num
+test$graph
+test = sortie_graph(cate, type="illus")
+test$poids
