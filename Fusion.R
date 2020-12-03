@@ -404,38 +404,10 @@ coord_radar <- function (theta = "x", start = 0, direction = 1)
 }
 
 
-objet<-categorisation(data.reduite,data.reduite,NULL,res.kmeans$cluster)
-objet$data
-objet$grp
-
-sortieuni <-univariee.categorisation(objet)
-sortieuni
-
-sortievt<-vtest.categorisation(objet,objet$grp)
-sortievt$num
-sortievt[[2]]
-sortievt[[1]]
 
 #--------------------------------------SORTIES GRAPHIQUES-------------------------------------------------------
 
-#ajouter cos2 contrib ...?????
-fun_acp<-function(act,illu,cluster){
-  #https://huboqiang.cn/2016/03/03/RscatterPlotPCA
-  res.pca<-PCA(act, scale.unit = TRUE, ncp = 5, graph = F)
-  #res.pca <- prcomp(act, scale. = TRUE)
 
-  #par(mfrow = c(1,2))
-  var <- get_pca_var(res.pca) #Creation d'une variable "var" avec tous les resultats concernants les variables
-  gvar<-fviz_pca_var(res.pca,col.var = "contrib",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel=T)
-  
- ind <- get_pca_ind(res.pca) #Creation d'une variable "ind" avec tous les resultats concernants les variables
-  gind<-fviz_pca_ind(res.pca, col.ind =cluster,gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),col.ind.sup = "purple")#graphique des individus selon leurs coordonnees et contribution 
-  #gvar<-autoplot(res.pca, data = act, colour = cluster)
-  #gind<-  gvar<-autoplot(res.pca, data = act, colour = cluster, loadings=T)
-
-  list(var=gvar,ind=gind)
-  
-}
 
 graph_uni_quali<-function(df,col,clust,profil){
   
@@ -469,7 +441,56 @@ graph_uni_quanti<-function(df,col,clust){
   
 }
 
-
+#ajouter cos2 contrib ...?????
+fun_acp<-function(data,cluster){
+  
+  cluster<-as.factor(cluster)
+  
+  #numillu<-match(illu,colnames(data))
+  #supl<-which(sapply(data[,numillu], is.numeric) ==T)
+  #supl<-as.numeric(supl)
+  
+ # data_acp<-cbind(data[,supl],data[,act])
+  
+  #https://huboqiang.cn/2016/03/03/RscatterPlotPCA
+  #res.pca<-PCA(data_acp,quanti.sup = 1, scale.unit = TRUE, ncp = 5, graph = F)
+  res.pca<-PCA(data, scale.unit = TRUE, ncp = 5, graph = F)
+  #res.pca <- prcomp(act, scale. = TRUE)
+  
+  #par(mfrow = c(1,2))
+  var <- get_pca_var(res.pca) #Creation d'une variable "var" avec tous les resultats concernants les variables
+  gvar<-fviz_pca_var(res.pca,col.var = "contrib",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel=T)
+  
+ 
+  ind <- get_pca_ind(res.pca) #Creation d'une variable "ind" avec tous les resultats concernants les variables
+#-------Version factoexra
+#ok#  gind<-fviz_pca_ind(res.pca, col.ind =cluster,geom.ind = "point")#graphique des individus selon leurs coordonnees et contribution 
+  #gvar<-autoplot(res.pca, data = act, colour = cluster)
+  #gind<-  gvar<-autoplot(res.pca, data = act, colour = cluster, loadings=T)
+  
+#ok#  gind2<-fviz_pca_ind(res.pca, col.ind =cluster)
+  
+#-------Version ggplot2
+  eig.val <- get_eigenvalue(res.pca) 
+  pc1 <- res.pca$ind$coord[, 1] # indexing the first column
+  pc2 <- res.pca$ind$coord[, 2] 
+  pc1_lab <- paste("PC1",round(eig.val[1,2],2),"%")
+  pc2_lab <- paste("PC2",round(eig.val[2,2],2),"%")
+  
+  gind <- ggplot(data = data, aes(x = pc1, y = pc2, color = cluster, shape = cluster)) +
+    
+    geom_hline(yintercept = 0, lty = 2) +
+    
+    geom_vline(xintercept = 0, lty = 2) +
+    
+    geom_point(alpha = 0.8) +xlab(pc1_lab)+ylab(pc2_lab)
+  
+  
+  gind2<-gind+geom_text(label=rownames(data))
+  
+  list(var=gvar,ind=gind,ind2=gind2)
+  
+}
 
 sortie_graph<-function(obj,type,profil="l"){
   if (type=="illus"){
@@ -485,7 +506,10 @@ sortie_graph<-function(obj,type,profil="l"){
     return(graph_uni_quanti)
   }
   if (type=="acp"){
-    fun_acp(obj$data[obj$act],obj$data[obj$illus],obj$grp)
+   # fun_acp(obj$data[obj$act],obj$data[obj$illus],obj$grp)
+    col_quanti<-which(sapply(obj$data, is.numeric) ==T)
+    #fun_acp(obj$data,obj$act,obj$illus,obj$grp)
+    fun_acp(objet$data[,col_quanti],obj$grp)
   }
 }
 
@@ -702,6 +726,7 @@ objet$grp
 resacp<-sortie_graph(objet,"acp")
 resacp$var
 resacp$ind
+resacp$ind2
 
 #Exemple graphique uni variable illus pour chaque cluster 
 gr<-sortie_graph(objet,"illus")
