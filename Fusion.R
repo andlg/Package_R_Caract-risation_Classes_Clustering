@@ -630,6 +630,7 @@ silplot.categorisation = function(obj){
   ggplot(data=s ,aes(x=sil, y=rownames(s))) +
     geom_bar(stat="identity", color = "black", fill = "steelblue") +
     xlim(-1, 1) +
+    xlab("sil") + ylab("point") +
     theme_minimal()
 }
 
@@ -662,7 +663,7 @@ db.categorisation = function(obj){
   for (i in 1:k){
     for (j in 1:k){
       r[i,j] = (s[i] + s[j])/M[i,j]
-      if(r[i,j]==Inf){r[i,j]=0}
+      if(r[i,j]==Inf | is.na(r[i,j]==Inf)){r[i,j]=0}
     }
     ri[i] = max(r[i,])
   } 
