@@ -560,7 +560,11 @@ adl.categorisation = function(obj){
 
 #--------------------Silhouette---------------------------------------
 #Le coefficient de silhouette varie entre -1 (pire classification) et 1 (meilleure classification)
-sil.categorisation = function(obj, graph = FALSE){
+sil.categorisation = function(obj){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  
   var_grp = obj$grp #cluster
   my_data = obj$act
   df_quanti = as.data.frame(obj$data[obj$var_grp])
@@ -615,16 +619,57 @@ sil.categorisation = function(obj, graph = FALSE){
   out = data.frame(cbind(sil,var_grp))
   colnames(out) = c("sil", "cluster")
   
-  p = ggplot(data=out ,aes(x=sil, y=rownames(out))) +
-    geom_bar(stat="identity", color = "black", fill = "steelblue") +
-    xlim(-1, 1) +
-    #geom_text(aes(label=sil), vjust=1.6, color="white", size=3.5) +
-    theme_minimal()
-  
-  #AFFICHER GRAPHE
   return(out)
 }
 
+silplot.categorisation = function(obj){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  s = sil.categorisation(obj)
+  ggplot(data=s ,aes(x=sil, y=rownames(s))) +
+    geom_bar(stat="identity", color = "black", fill = "steelblue") +
+    xlim(-1, 1) +
+    theme_minimal()
+}
+
+
+#--------------------Davies Bouldin---------------------------------------
+db.categorisation = function(obj){
+  if(!is.categorisation(obj)){
+    stop("L'argument obj n'est pas de type categorisation")
+  }
+  cluster = obj$grp
+  n = length(cluster)
+  k = length(unique(obj$grp))
+  
+  centre=matrix(nrow=k,ncol=ncol(obj$act)) #centroides
+  for(i in 1:k){
+    for(j in 1:ncol(obj$act)){
+      centre[i,j]=mean(obj$act[cluster==i,j])
+    }
+  }
+  s=c() #distance entre le point et le centroide
+  for(i in 1:k){                             
+    c=centre[i,]
+    c_bis = sapply(c, rep, nrow(obj$act[obj$grp==i,]))
+    s[i] = mean(sqrt(apply((obj$act[obj$grp==i,] - c_bis)^2,1,sum))^2)^(1/2)
+  }
+  
+  M = rdist(centre) #distance entre centroides
+  r = matrix(0,nrow=k, ncol = k)
+  ri = c()
+  for (i in 1:k){
+    for (j in 1:k){
+      r[i,j] = (s[i] + s[j])/M[i,j]
+      if(r[i,j]==Inf){r[i,j]=0}
+    }
+    ri[i] = max(r[i,])
+  } 
+  
+  db = mean(ri)
+  return(db)
+}
 
 
 #--------------------Test Antho---------------------------------------
