@@ -62,6 +62,7 @@ calculs_uni = function(col, cluster){
     cl<-length(levels(as.factor(cluster)))-1
     test<-suppressWarnings(chisq.test(cluster,col))
     ddl<-test$parameter
+    n<-length(col)
     denom<- n*ddl
     khival<-test$statistic
     cramer<-sqrt(khival/denom)
@@ -136,11 +137,8 @@ vtest.categorisation = function(obj){
   if(!is.categorisation(obj)){
     stop("L'argument obj n'est pas de type categorisation")
   }
-  if(!is.logical(illus)){
-    stop("L'argument illus n'est pas de type logical")
-  }
   
-  suppressWarnings(nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)}
+  suppressWarnings(if(nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)}) 
   var_grp = obj$grp
   df_quanti = as.data.frame(obj$data[obj$var_grp]) 
   df_quali = as.data.frame(obj$data[obj$var_grp])
@@ -615,8 +613,7 @@ my_clust = cbind(datas[,-1], groupes.cah)
 
 cate = categorisation(my_clust, my_clust[,1:7], my_clust[,7:11], my_clust$groupes.cah)
 print(cate)
-corr.categorisation(cate)
-cramer.categorisation(cate)
+univariee.categorisation(cate)
 test = vtest.categorisation(cate)
 test$num
 test$graph
