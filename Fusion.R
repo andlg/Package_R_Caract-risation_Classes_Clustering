@@ -560,6 +560,7 @@ objet$grp
 resacp<-sortie_graph(objet,"acp")
 resacp$var
 resacp$ind
+resacp$ind2
 
 #Exemple graphique uni variable illus pour chaque cluster 
 gr<-sortie_graph(objet,"illus")
@@ -573,6 +574,7 @@ gr<-sortie_graph(objet,"illus",profil = "c")
 gr$code_du_domaine
 gr$femmes
 
+
 #Exemple graphique uni variable active
 gr2<-sortie_graph(objet,"act")
 gr2
@@ -580,11 +582,12 @@ gr2
 categouni<-univariee.categorisation(objet)
 categouni$code_du_domaine
 categouni$taux_dinsertion
+categouni
 #on ne peut pas utiliser $ --> y a t il une solution ? 
 
 #Valeur test 
 #$groupe passer en argument ????
-sortievtest<-vtest.categorisation(objet,objet$grp)
+sortievtest<-vtest.categorisation(objet)
 sortievtest$num
 sortievtest$graph
 
