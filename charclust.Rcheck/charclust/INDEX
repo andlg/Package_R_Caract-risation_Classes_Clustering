@@ -1,0 +1,11 @@
+charac_graph            Plot some graphs about characterisation of
+                        clusters
+charac_uni              Univariate characterization of classes
+                        resulting from a clustering
+clustlda                Linear Discriminant Analysis on clustering
+                        results
+db_index                Compute Davies Bouldin's index
+insertion_master        Integration after master's
+objcharac               Charclust
+sil                     Compute silhouette information from clustering
+testval                 Test Value Indicator

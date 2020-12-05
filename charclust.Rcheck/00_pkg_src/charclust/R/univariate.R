@@ -50,7 +50,6 @@ calcul_uni = function(col, cluster){
     return(result)
 
   }else { #case quanti
-    #http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
     g = length(unique(cluster)) #nb clusters
     n = length(col) #nb obs
     moy = mean(col) #global mean
