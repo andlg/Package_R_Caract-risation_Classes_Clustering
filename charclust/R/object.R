@@ -1,13 +1,18 @@
-#' Title
+#' Categorisation
 #'
-#' @param df a dataframe with
-#' @param var_act un truc
-#' @param var_illus un truc
-#' @param var_grp un truc
+#' @param df a dataframe with all datas
+#' @param var_act a dataframe with active variables
+#' @param var_illus a dataframe with illustrative variables
+#' @param var_grp a dataframe with the clusters
 #'
+#' @return a categorisation object
 #'
 #' @export
 #'
+#' @examples
+#' library(charclust)
+#' data(iris)
+#' obj = categorisation(iris, iris[,-5], NULL, iris$Species)
 #'
 categorisation = function(df, var_act, var_illus, var_grp){
   #controles
@@ -29,3 +34,5 @@ categorisation = function(df, var_act, var_illus, var_grp){
 
   return(instance)
 }
+
+

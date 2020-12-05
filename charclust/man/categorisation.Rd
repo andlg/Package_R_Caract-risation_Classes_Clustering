@@ -2,19 +2,28 @@
 % Please edit documentation in R/object.R
 \name{categorisation}
 \alias{categorisation}
-\title{Title}
+\title{Categorisation}
 \usage{
 categorisation(df, var_act, var_illus, var_grp)
 }
 \arguments{
-\item{df}{a dataframe with}
+\item{df}{a dataframe with all datas}
 
-\item{var_act}{un truc}
+\item{var_act}{a dataframe with active variables}
 
-\item{var_illus}{un truc}
+\item{var_illus}{a dataframe with illustrative variables}
 
-\item{var_grp}{un truc}
+\item{var_grp}{a dataframe with the clusters}
+}
+\value{
+a categorisation object
 }
 \description{
-Title
+Categorisation
+}
+\examples{
+library(charclust)
+data(iris)
+obj = categorisation(iris, iris[,-5], NULL, iris$Species)
+
 }
