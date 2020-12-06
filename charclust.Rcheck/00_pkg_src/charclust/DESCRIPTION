@@ -1,13 +1,10 @@
 Package: charclust
-Title: What the Package Does (One Line, Title Case)
+Title: This package evaluate a clustering's result
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Axelle", "Barou", role = c("aut", "cre"), email = "axellebarou06@gmail.com")
+    person("Anthony", "Delage", role = c("aut", "cre"), email = "anthony.delage8@free.fr")
+Description: This package provides functionality to characterize in a univariate or multivariate way the classes resulting from an automatic classification process. Its contain a strong graphic compenents and allows to calculate some score evaluation indices.
 Depends: R (>= 3.1.0)
 License: GPL-3
 Encoding: UTF-8
@@ -17,6 +14,6 @@ RoxygenNote: 7.1.1
 Imports: fields, ggplot2, FactoMineR, factoextra, reshape2, MASS,
         questionr
 NeedsCompilation: no
-Packaged: 2020-12-05 23:13:45 UTC; Axelle
-Author: First Last [aut, cre] (YOUR-ORCID-ID)
-Maintainer: First Last <first.last@example.com>
+Packaged: 2020-12-06 16:13:06 UTC; Axelle
+Author: Anthony Delage [aut, cre]
+Maintainer: Anthony Delage <anthony.delage8@free.fr>

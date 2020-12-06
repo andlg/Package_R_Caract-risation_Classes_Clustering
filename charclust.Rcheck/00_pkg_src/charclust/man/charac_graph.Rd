@@ -14,10 +14,10 @@ charac_graph(obj, type, profile = "l")
 \item{profile}{Optionnally, a string indicating which profile to see for the "illus" graph : "l" : line - "c": column. The default is "l"}
 }
 \value{
-charac_grap returns some graphs about characterisation of clusters
+charac_graph returns some graphs about characterisation of clusters
 \describe{
 \item{Case type "illus"}{boxplots or barplots depending on the type of illustrative variables}
-\item{Case type "act"}{boxplots}
+\item{Case type "act"}{boxplots or barplots depending on the type of active variables}
 \item{Case type "pca"}{PCA graphs for variables and individuals}
 }
 }

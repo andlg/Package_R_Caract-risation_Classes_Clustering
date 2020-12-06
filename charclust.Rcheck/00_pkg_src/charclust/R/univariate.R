@@ -36,7 +36,7 @@ charac_uni = function(obj){
 calcul_uni = function(col, cluster){
   #case quali
   if (!is.numeric(col)){
-    f<-length(levels(col))-1
+    f<-length(levels(as.factor(col)))-1
     cl<-length(levels(as.factor(cluster)))-1
     test<-suppressWarnings(chisq.test(cluster,col)) #compute chisq test
     n<-length(col)
@@ -50,6 +50,7 @@ calcul_uni = function(col, cluster){
     return(result)
 
   }else { #case quanti
+    #http://eric.univ-lyon2.fr/~ricco/cours/didacticiels/R/cah_kmeans_avec_r.pdf
     g = length(unique(cluster)) #nb clusters
     n = length(col) #nb obs
     moy = mean(col) #global mean

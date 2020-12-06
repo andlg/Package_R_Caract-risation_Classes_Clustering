@@ -31,7 +31,7 @@ adl = clustlda(obj)
 print(adl$coef_LDA)
 #the confusion matrix
 print(adl$confusion_matrix)
-the model evaluation
+#the model evaluation
 print(adl$eval)
 }
 

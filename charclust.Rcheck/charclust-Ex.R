@@ -122,7 +122,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ##D print(adl$coef_LDA)
 ##D #the confusion matrix
 ##D print(adl$confusion_matrix)
-##D the model evaluation
+##D #the model evaluation
 ##D print(adl$eval)
 ## End(Not run)
 
@@ -176,7 +176,7 @@ flush(stderr()); flush(stdout())
 
 base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: objcharac
-### Title: Charclust
+### Title: objcharac
 ### Aliases: objcharac
 
 ### ** Examples

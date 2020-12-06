@@ -1,4 +1,4 @@
-#' Charclust
+#' objcharac
 #'
 #' @param df a dataframe with all datas
 #' @param var_act a dataframe with active variables
@@ -49,5 +49,3 @@ objcharac = function(df, var_act, var_illus=NULL, var_grp){
 
   return(instance)
 }
-
-

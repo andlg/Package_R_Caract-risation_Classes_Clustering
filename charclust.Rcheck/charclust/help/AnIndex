@@ -1,5 +1,7 @@
+charclust-package	charclust
 charac_graph	charac_graph
 charac_uni	charac_uni
+charclust	charclust
 clustlda	clustlda
 db_index	db_index
 insertion_master	insertion_master

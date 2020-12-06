@@ -2,7 +2,7 @@
 % Please edit documentation in R/object.R
 \name{objcharac}
 \alias{objcharac}
-\title{Charclust}
+\title{objcharac}
 \usage{
 objcharac(df, var_act, var_illus = NULL, var_grp)
 }
@@ -25,7 +25,7 @@ an object of type objcharac
 }
 }
 \description{
-Charclust
+objcharac
 }
 \examples{
 \dontrun{

@@ -36,7 +36,7 @@ charac_uni = function(obj){
 calcul_uni = function(col, cluster){
   #case quali
   if (!is.numeric(col)){
-    f<-length(levels(col))-1
+    f<-length(levels(as.factor(col)))-1
     cl<-length(levels(as.factor(cluster)))-1
     test<-suppressWarnings(chisq.test(cluster,col)) #compute chisq test
     n<-length(col)

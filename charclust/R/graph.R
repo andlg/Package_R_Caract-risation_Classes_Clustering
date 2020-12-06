@@ -1,6 +1,6 @@
 #' Plot some graphs about characterisation of clusters
 #'
-#'This fucntion returns graphs from an objcharac object.
+#' This fucntion returns graphs from an objcharac object.
 #'
 #'
 #' @param obj an object of type objcharac
@@ -9,10 +9,10 @@
 #'
 #' @import ggplot2 FactoMineR factoextra
 #'
-#' @return charac_grap returns some graphs about characterisation of clusters
+#' @return charac_graph returns some graphs about characterisation of clusters
 #' \describe{
 #' \item{Case type "illus"}{boxplots or barplots depending on the type of illustrative variables}
-#' \item{Case type "act"}{boxplots}
+#' \item{Case type "act"}{boxplots or barplots depending on the type of active variables}
 #' \item{Case type "pca"}{PCA graphs for variables and individuals}
 #' }
 #'
@@ -49,17 +49,17 @@
 #' @export
 charac_graph<-function(obj,type,profile="l"){
 
+  df_uni<-cbind(obj$data,grp=obj$grp)
   if (type=="illus"){
-    df_quali<-cbind(obj$data,grp=obj$grp)
-    graph_uni_illus<-lapply(colnames(obj$illus) , graph_uni_illus,df=df_quali,clust=as.factor(df_quali$grp),profil=profile)
+    graph_uni_illus<-lapply(colnames(obj$illus) , graph_draw,df=df_uni,clust=as.factor(df_uni$grp),profil=profile)
     names(graph_uni_illus)<-colnames(obj$illus)
     return(graph_uni_illus)
   }
 
   if (type=="act"){
-    df_quanti<-cbind(obj$data,grp=obj$grp)
-    graph_uni_quanti<-lapply(df_quanti[colnames(obj$act)] , graph_uni_quanti,df=df_quanti,clust=as.factor(df_quanti$grp))
-    return(graph_uni_quanti)
+    graph_uni_act<-lapply(colnames(obj$act) , graph_draw,df=df_uni,clust=as.factor(df_uni$grp),profil=profile)
+    names(graph_uni_act)<-colnames(obj$act)
+    return(graph_uni_act)
   }
 
   if (type=="pca"){
@@ -68,39 +68,44 @@ charac_graph<-function(obj,type,profile="l"){
   }
 }
 
-graph_uni_illus<-function(df,col,clust,profil){
+graph_draw<-function(df,col,clust,profil){
 
-  #Case numeric illustrative variable
+  #Case numeric variable
   if (is.numeric(df[,col])){
-    graph_uni_quanti(df,df[,col],clust)
+    if(length(levels(as.factor(df[,col])))>2){
+      plot_quanti<-(ggplot(df, aes(x = clust,y = df[,col], color=clust)) +
+                      geom_boxplot() +
+                      ggtitle("Box-plots") +
+                      xlab("Clusters") +
+                      ylab(col) +
+                      theme(legend.position = "none") +
+                      stat_summary(fun=mean, geom="point", shape=4, size=2, color="black")
+      )
+      return (plot_quanti)
+      #Case numeric variable corresponding to qualitative ==> dummy
+    } else{
+      # transform 1 - 0 into "1" - "0"
+      df[,col] <- as.factor(df[,col])
+    }
+  }
 
-  }else{
-    #Case categorical illustrative variable
-
-    #Distribution of modalities inside clusters
-    if(profil=="l"){
-      ggplot(df, aes_string(x = clust,fill = col)) +
+  #Case categorical illustrative variable
+  #Distribution of modalities inside clusters
+  if(profil=="l"){
+    ggplot(df, aes_string(x = clust,fill = col)) +
       geom_bar(position = "stack" ) +
-      xlab(col) +
+      xlab("Clusters") +
       ggtitle("Distribution of modalities inside clusters")
     #Distribution of clusters for each modality
-    }else if (profil=="c"){
-      ggplot(df, aes_string(x = col,fill = clust)) +
+  } else if (profil=="c"){
+    ggplot(df, aes_string(x = col,fill = clust)) +
       geom_bar(position = "stack" ) +
-      xlab(clust) +
+      labs(fill = "Clusters", x=col)+
       ggtitle("Distribution of clusters for each modality")
-    }
   }
 }
 
-graph_uni_quanti<-function(df,col,clust){
 
-  ggplot(df, aes(clust,col)) +
-  geom_boxplot() +
-  ggtitle("Boxplot") +
-  xlab("Clusters")
-
-}
 
 graph_pca<-function(data,cluster){
 

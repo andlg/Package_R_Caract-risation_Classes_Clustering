@@ -36,12 +36,11 @@
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
-charac_graph: no visible binding for global variable 'profil'
 graph_vtest: no visible binding for global variable 'ID'
 graph_vtest: no visible binding for global variable 'val'
 graph_vtest: no visible binding for global variable 'Cluster'
 Undefined global functions or variables:
-  Cluster ID profil val
+  Cluster ID val
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
