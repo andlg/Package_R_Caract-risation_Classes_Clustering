@@ -10,7 +10,15 @@ This package provides functionality to characterize in a univariate or multivari
 Its contain a strong graphic compenents and allows to calculate some score evaluation indices.
 }
 \seealso{
-'objcharac'
+\describe{
+\item{\code{\link[=objcharac]{objcharac()}}}
+\item{\code{\link[=charac_uni]{charac_uni()}}}
+\item{\code{\link[=charac_graph]{charac_graph()}}}
+\item{\code{\link[=clustlda]{clustlda()}}}
+\item{\code{\link[=db_index]{db_index()}}}
+\item{\code{\link[=sil]{sil()}}}
+\item{\code{\link[=testval]{testval()}}}
+}
 }
 \author{
 \describe{

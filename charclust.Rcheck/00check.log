@@ -14,7 +14,16 @@
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking serialization versions ... OK
-* checking whether package 'charclust' can be installed ... OK
+* checking whether package 'charclust' can be installed ... WARNING
+Found the following significant warnings:
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:14:45
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:15:47
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:16:51
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:17:43
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:18:43
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:19:33
+  Warning: marque erronée (espace additionel ?) à charclust.Rd:20:41
+See 'C:/Users/Axelle/Desktop/M/03_SISE/01_PROGRAMMATION R/PROJET/Package_R_Caracterisation_Classes_Clustering/charclust.Rcheck/00install.out' for details.
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking for future file timestamps ... OK
@@ -41,7 +50,14 @@ graph_vtest: no visible binding for global variable 'val'
 graph_vtest: no visible binding for global variable 'Cluster'
 Undefined global functions or variables:
   Cluster ID val
-* checking Rd files ... OK
+* checking Rd files ... WARNING
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:14:45
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:15:47
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:16:51
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:17:43
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:18:43
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:19:33
+prepare_Rd: marque erronée (espace additionel ?) à charclust.Rd:20:41
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
 * checking Rd cross-references ... OK
@@ -68,4 +84,4 @@ Variables in data frame 'insertion_master'
 * checking for non-standard things in the check directory ... OK
 * checking for detritus in the temp directory ... OK
 * DONE
-Status: 1 WARNING, 1 NOTE
+Status: 3 WARNINGs, 1 NOTE

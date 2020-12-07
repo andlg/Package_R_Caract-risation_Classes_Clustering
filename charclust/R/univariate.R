@@ -40,7 +40,7 @@ calcul_uni = function(col, cluster){
     cl<-length(levels(as.factor(cluster)))-1
     test<-suppressWarnings(chisq.test(cluster,col)) #compute chisq test
     n<-length(col)
-    denom<- n*min(cl, f)
+    denom<- n*min(c(cl, f))
     khival<-test$statistic #chi-squared test statistic
     cramer<-sqrt(khival/denom) #cramer's v
     p_value<-test$p.value #p-value for the test

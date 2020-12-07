@@ -14,7 +14,7 @@ RoxygenNote: 7.1.1
 Imports: fields, ggplot2, FactoMineR, factoextra, reshape2, MASS,
         questionr
 NeedsCompilation: no
-Packaged: 2020-12-06 16:13:06 UTC; Axelle
+Packaged: 2020-12-07 12:40:04 UTC; Axelle
 Author: Anthony Delage [aut, cre]
 Maintainer: Anthony Delage <anthony.delage8@free.fr>
-Built: R 4.0.2; ; 2020-12-06 16:13:21 UTC; windows
+Built: R 4.0.2; ; 2020-12-07 12:40:13 UTC; windows

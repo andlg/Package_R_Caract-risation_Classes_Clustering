@@ -10,5 +10,14 @@
 #'  }
 #' @docType package
 #' @name charclust
-#' @seealso 'objcharac'
+#' @seealso
+#' \describe{
+#'  \item{[objcharac()]}
+#'  \item{[charac_uni()]}
+#'  \item{[charac_graph()]}
+#'  \item{[clustlda()]}
+#'  \item{[db_index()]}
+#'  \item{[sil()]}
+#'  \item{[testval()]}
+#'  }
 "_PACKAGE"

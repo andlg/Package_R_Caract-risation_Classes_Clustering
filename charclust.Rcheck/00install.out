@@ -5,6 +5,13 @@
 *** moving datasets to lazyload DB
 ** byte-compile and prepare package for lazy loading
 ** help
+Warning: marque erronée (espace additionel ?) à charclust.Rd:14:45
+Warning: marque erronée (espace additionel ?) à charclust.Rd:15:47
+Warning: marque erronée (espace additionel ?) à charclust.Rd:16:51
+Warning: marque erronée (espace additionel ?) à charclust.Rd:17:43
+Warning: marque erronée (espace additionel ?) à charclust.Rd:18:43
+Warning: marque erronée (espace additionel ?) à charclust.Rd:19:33
+Warning: marque erronée (espace additionel ?) à charclust.Rd:20:41
 *** installing help indices
 ** building package indices
 ** testing if installed package can be loaded from temporary location
