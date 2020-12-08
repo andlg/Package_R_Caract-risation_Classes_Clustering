@@ -1,4 +1,4 @@
-# Package_R_Caract-risation_Classes_Clustering
+# Package_R_Caracterisation_Classes_Clustering
 
 This repository contains the R package "charclust". This package provides functionality to characterize in a univariate or multivariate way the classes resulting from an automatic classification process. Its contain a strong graphic compenents and allows to calculate some score evaluation indices.
 
