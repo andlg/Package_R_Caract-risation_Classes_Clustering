@@ -6,7 +6,7 @@ You can find in the repository :
 
 - charclust : a repository with files used to build the package 
 - charclust_0.0.0.9000.tar.gz : the archive of the package 
-- tutorial_charclust: PDF version of the tutorial below
+- tutorial_charclust.pdf: PDF version of the tutorial below
   
   
 # TUTORIAL CHARCLUST PACKAGE 
