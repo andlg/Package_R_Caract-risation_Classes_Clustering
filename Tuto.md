@@ -1,9 +1,9 @@
 
-#TUTORIAL CHARCLUST PACKAGE #
+# TUTORIAL CHARCLUST PACKAGE 
 -----
 -----
 
-##Introduction##
+## Introduction
 -----
 
 The goal of this tutorial is to show how to use the charclust package and interpret the results. The dataset used is the “insertion_master” available in the package. It contains data on the occupational integration of master's graduates in France in 2012 (https://www.data.gouv.fr/fr/datasets/insertion-professionnelle-des-diplomes-de-master-en-universites-et-etablissements-assimil-0/).  
