@@ -18,8 +18,8 @@ You can find in the repository :
 The goal of this tutorial is to show how to use the charclust package and interpret the results. The dataset used is the “insertion_master” available in the package. It contains data on the occupational integration of master's graduates in France in 2012 (https://www.data.gouv.fr/fr/datasets/insertion-professionnelle-des-diplomes-de-master-en-universites-et-etablissements-assimil-0/).  
 After performing an automatic classification algorithm on the data, we are going to evaluate the quality of the results and to describe the clusters got using the charclust package.
    
-##Loading the package and data
------
+## Loading the package and data
+
    We start by loading the package and the “insertion_master” data. Then we perform the k-means algorithm for our classification.
 
 
@@ -33,18 +33,16 @@ After performing an automatic classification algorithm on the data, we are going
     data.act <-insertion_master[,7:11]
     res.kmeans<-kmeans(data.act,centers=3,nstart=5)
 
-##Object creation
--------------------
+## Object creation
 The objcharac function allows to build an object of type objcharac.  
 This objet contains the result of the clustering and the elements that made it possible to build it.
 
 
     obj <- objcharac(insertion_master, data.act, data.illu, res.kmeans$cluster)
 
-##Clustering evalutation
-------------------------
+## Clustering evalutation
 
-###**Davies Bouldin's index**
+### Davies Bouldin's index
 
 The db_index function computes the Davies Bouldin's index which evaluates the clustering quality.  
 The Davies Bouldin's index varies between 0 et infinity. A model with a low index is a model with a good separation of clusters. 
@@ -56,7 +54,7 @@ The Davies Bouldin's index varies between 0 et infinity. A model with a low inde
     ##  DB Index 
     ## 0.6033811
 
-###**Silhouette coefficient**
+### Silhouette coefficient
 
 The silhouette coefficient is another index which evaluate the clustering quality. This index varies between –1 and 1.  
 The sil function allows to compute the total silhouette coefficient of the partition.
@@ -84,8 +82,7 @@ We can also display the graph of the silhouette coefficients by group.
 ![](Tuto_files/figure-markdown_strict/unnamed-chunk-5-1.png) 
 
 
-##Univariate characterization
--------------------------
+## Univariate characterization
 
 The package also allows you to characterize the different groups created by clustering.  We start by taking an interest on variables used for the creation of the groups and especially “taux_dinsertion” (occupational integration rate). 
 
@@ -232,12 +229,11 @@ We note the clusters 1 et 2 are similar in relation to numerical variables. They
 
 The results match with the graph analysis. 
 
-##Multivariate characterization
----------------------------
+## Multivariate characterization
 
 To complete the analysis, we are going to use multivariate methods to characterize the results of clustering.
 
-###**Linear Discriminant Analysis**
+### Linear Discriminant Analysis
 
 The LDA methods can be used to characterize the results of clustering by considering the classes predicted by the classification algorithm used as the target variable.  
   
@@ -273,7 +269,7 @@ The LDA fairly well reproduces the constitution.
 
 It seems the variables “emplois_a_temps_plein” and “emplois_stable” are not significant.
   
-  ###**Principal Components Analysis**  
+  ### Principal Components Analysis  
     
    The Principal Components Analysis is also a good way to interpret links between variables and to have a synthetic viewing. 
 
@@ -292,7 +288,7 @@ We note that the women rate and the integration rate are not correlated but on t
 
 Thanks to this chart we see again that the cluster 1 and 2 are close since we can’t be really separated in the space. The master’s degrees are not linked to a high wage (axis 1) but some of them can be associated with a good integration rate (axis 2).  
   
-  Through this example we have pointed out a way to use our package and the results of different functions included inside. 
+  **Through this example we have pointed out a way to use our package and the results of different functions included inside.** 
 
 
 
