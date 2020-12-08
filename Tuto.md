@@ -23,17 +23,22 @@ Loading the package and data
     data.act <-insertion_master[,7:11]
     res.kmeans<-kmeans(data.act,centers=3,nstart=5)
 
-Creation de l'objet
+Object creation
 -------------------
+The objcharac function allows to build an object of type objcharac.
+This objet contains the result of the clustering and the elements that made it possible to build it.
 
-explications ....
 
     obj <- objcharac(insertion_master, data.act, data.illu, res.kmeans$cluster)
 
-Evaluation du clustering
+Clustering evalutation
 ------------------------
 
-### DB
+**Davies Bouldin's index**
+
+The db_index function computes the Davies Bouldin's index which evaluates the clustering quality. 
+The Davies Bouldin's index varies between 0 et infinity. A model with a low index is a model with a good separation of clusters. 
+
 
     db <- db_index(obj)
     print(db)
@@ -41,20 +46,28 @@ Evaluation du clustering
     ##  DB Index 
     ## 0.6033811
 
-bof on va regarder un autre indicateur \#\#\# Silhouette expliquer en
-quoi consiste l'indice
+**Silhouette coefficient**
+
+The silhouette coefficient is another index which evaluate the clustering quality. This index varies between –1 and 1. 
+The sil function allows to compute the total silhouette coefficient of the partition.
+
 
     silhouette <- sil(obj)
     print(silhouette$silglob)
 
     ## [1] 0.5930815
 
-il est pas mal regardons par clusters
+The global coefficient is close to 1 so we have a pretty good score. 
+We can also compute the silhouette coefficient by group to compare their homogeneities.
+The groups with the strongest silhouette coefficients are the most homogeneous.
 
     print(silhouette$silclus)
 
     ##         1         2         3 
     ## 0.5475537 0.6226540 0.6090367
+
+The most homogeneous groups seem to be groups 1 and 3.
+We can also display the graph of the silhouette coefficients by group.
 
     silhouette$plot
 
