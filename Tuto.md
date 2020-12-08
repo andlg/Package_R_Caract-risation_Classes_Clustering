@@ -1,10 +1,21 @@
-Intro
+
+TUTORIAL CHARCLUST PACKAGE 
 -----
 
-The goal of this tutorial is to show how to use the charclust package
-and interpret the results.  
-The dataset for this example is "insertion\_master" which is provided
-with the package. but du clustering methodes des kmeans avec 3 classes
+Introduction
+-----
+
+   The goal of this tutorial is to show how to use the charclust package and interpret the results. The dataset used is the “insertion_master” available in the package. It contains data on the occupational integration of master's graduates in France in 2012 (https://www.data.gouv.fr/fr/datasets/insertion-professionnelle-des-diplomes-de-master-en-universites-et-etablissements-assimil-0/).
+   After performing an automatic classification algorithm on the data, we are going to evaluate the quality of the results and to describe the clusters got using the charclust package.
+   
+Loading the package and data
+-----
+   We start by loading the package and the “insertion_master” data. Then we perform the k-means algorithm for our classification.
+
+
+    library(devtools)
+    
+    install_github("andlg/Package_R_Caracterisation_Classes_Clustering/charclust")
 
     library(charclust)
     data(insertion_master)
