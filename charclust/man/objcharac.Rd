@@ -7,7 +7,7 @@
 objcharac(df, var_act, var_illus = NULL, var_grp)
 }
 \arguments{
-\item{df}{a dataframe with all datas}
+\item{df}{a dataframe with all the data}
 
 \item{var_act}{a dataframe with active variables}
 
@@ -20,7 +20,7 @@ an object of type objcharac
 \describe{
 \item{$data}{dataframe}
 \item{$act}{dataframe with active variables for clustering}
-\item{$illus}{dataframe with illustrative variables}
+\item{$illus}{dataframe with illustrative variables, default=NULL}
 \item{$grp}{clusters for each observations}
 }
 }

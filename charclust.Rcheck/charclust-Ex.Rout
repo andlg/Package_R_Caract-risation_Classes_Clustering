@@ -64,7 +64,7 @@ Type 'q()' to quit R.
 > ##D g_illus <- charac_graph(obj, type = "illus", profile = "l")
 > ##D print(g_illus)
 > ##D print(g_illus$domaine)
-> ##D #' #graph for illustrative variables, distribution of clusters foreach modality
+> ##D #graph for illustrative variables, distribution of clusters foreach modality
 > ##D g_illus2 <- charac_graph(obj, type = "illus", profile = "c")
 > ##D print(g_illus2)
 > ##D print(g_illus2$domaine)
@@ -169,7 +169,7 @@ Type 'q()' to quit R.
 > ##D cl = c(1, 1, 1, 2)
 > ##D data = as.data.frame(cbind(X, Y, cl))
 > ##D colnames(data) = c("X", "Y", "cluster")
-> ##D obj = categorisation(data, data[, -3], NULL, data$cluster)
+> ##D obj = objcharac(data, data[, -3], NULL, data$cluster)
 > ##D db = db_index(obj)
 > ##D print(db)
 > ##D ------------------
@@ -236,7 +236,7 @@ Type 'q()' to quit R.
 > ##D cl = c(1, 1, 1, 2)
 > ##D data = as.data.frame(cbind(X, Y, cl))
 > ##D colnames(data) = c("X", "Y", "cluster")
-> ##D obj = categorisation(data, data[, -3], NULL, data$cluster)
+> ##D obj = objcharac(data, data[, -3], NULL, data$cluster)
 > ##D s = sil(obj)
 > ##D s$silclus
 > ##D s$silglob
@@ -306,7 +306,7 @@ Type 'q()' to quit R.
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.33 0.49 2.81 NA NA 
+Time elapsed:  1.67 0.4 2.08 NA NA 
 > grDevices::dev.off()
 null device 
           1 

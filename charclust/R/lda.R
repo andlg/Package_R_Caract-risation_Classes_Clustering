@@ -4,12 +4,12 @@
 #'
 #'
 #' @param obj an object of type objcharac
-
+#'
 #' @return
 #' \describe{
 #'  \item{$coef_LDA}{coefficients of LDA}
 #'  \item{$confusion_matrix}{groups predict by LDA VS clusters}
-#'  \item{$eval}{interpretation of coeeficients}
+#'  \item{$eval}{statistic F and p-value of Fisher test}
 #' }
 #'
 #' @examples
@@ -35,9 +35,9 @@
 #Source: http://eric.univ-lyon2.fr/~ricco/tanagra/fichiers/fr_Tanagra_LDA_MASS_R.pdf
 clustlda = function(obj){
 
-  # if(!is.categorisation(obj)){
-  #   stop("L'argument obj n'est pas de type categorisation")
-  # }
+  if(class(obj) != "objcharac"){
+    stop("The argument obj is not an objcharac")
+  }
 
   var_grp = obj$grp
   df_quanti = as.data.frame(obj$data[obj$var_grp])

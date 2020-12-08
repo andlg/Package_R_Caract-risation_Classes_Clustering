@@ -7,7 +7,7 @@
 sil(obj)
 }
 \arguments{
-\item{obj}{a categorisation}
+\item{obj}{an object of type objcharac}
 }
 \value{
 sil returns a list containing:
@@ -27,7 +27,7 @@ Y = c(20, 23, 28, 15)
 cl = c(1, 1, 1, 2)
 data = as.data.frame(cbind(X, Y, cl))
 colnames(data) = c("X", "Y", "cluster")
-obj = categorisation(data, data[, -3], NULL, data$cluster)
+obj = objcharac(data, data[, -3], NULL, data$cluster)
 s = sil(obj)
 s$silclus
 s$silglob

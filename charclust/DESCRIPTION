@@ -5,7 +5,7 @@ Authors@R:
     person("Axelle", "Barou", role = c("aut", "cre"), email = "axellebarou06@gmail.com")
     person("Anthony", "Delage", role = c("aut", "cre"), email = "anthony.delage8@free.fr")
 Description: This package provides functionality to characterize in a univariate or multivariate way the classes resulting from an automatic classification process. Its contain a strong graphic compenents and allows to calculate some score evaluation indices.
-Depends: R (>= 3.1.0)
+Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

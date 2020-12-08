@@ -45,7 +45,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ##D g_illus <- charac_graph(obj, type = "illus", profile = "l")
 ##D print(g_illus)
 ##D print(g_illus$domaine)
-##D #' #graph for illustrative variables, distribution of clusters foreach modality
+##D #graph for illustrative variables, distribution of clusters foreach modality
 ##D g_illus2 <- charac_graph(obj, type = "illus", profile = "c")
 ##D print(g_illus2)
 ##D print(g_illus2$domaine)
@@ -150,7 +150,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ##D cl = c(1, 1, 1, 2)
 ##D data = as.data.frame(cbind(X, Y, cl))
 ##D colnames(data) = c("X", "Y", "cluster")
-##D obj = categorisation(data, data[, -3], NULL, data$cluster)
+##D obj = objcharac(data, data[, -3], NULL, data$cluster)
 ##D db = db_index(obj)
 ##D print(db)
 ##D ------------------
@@ -217,7 +217,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ##D cl = c(1, 1, 1, 2)
 ##D data = as.data.frame(cbind(X, Y, cl))
 ##D colnames(data) = c("X", "Y", "cluster")
-##D obj = categorisation(data, data[, -3], NULL, data$cluster)
+##D obj = objcharac(data, data[, -3], NULL, data$cluster)
 ##D s = sil(obj)
 ##D s$silclus
 ##D s$silglob

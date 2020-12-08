@@ -9,7 +9,7 @@ charac_graph(obj, type, profile = "l")
 \arguments{
 \item{obj}{an object of type objcharac}
 
-\item{type}{a string indicating the graph wanted : "illus" : distribution for illustrative variables - "act" : boxplots for active variables - "pca" - factorial representation}
+\item{type}{a string indicating the graph wanted : "illus" : distribution for illustrative variables - "act" : boxplots for active variables - "pca" : factorial representation}
 
 \item{profile}{Optionnally, a string indicating which profile to see for the "illus" graph : "l" : line - "c": column. The default is "l"}
 }
@@ -39,7 +39,7 @@ print(g_act$taux_dinsertion)
 g_illus <- charac_graph(obj, type = "illus", profile = "l")
 print(g_illus)
 print(g_illus$domaine)
-#' #graph for illustrative variables, distribution of clusters foreach modality
+#graph for illustrative variables, distribution of clusters foreach modality
 g_illus2 <- charac_graph(obj, type = "illus", profile = "c")
 print(g_illus2)
 print(g_illus2$domaine)

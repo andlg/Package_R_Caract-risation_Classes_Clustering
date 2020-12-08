@@ -16,7 +16,7 @@
 #' cl = c(1, 1, 1, 2)
 #' data = as.data.frame(cbind(X, Y, cl))
 #' colnames(data) = c("X", "Y", "cluster")
-#' obj = categorisation(data, data[, -3], NULL, data$cluster)
+#' obj = objcharac(data, data[, -3], NULL, data$cluster)
 #' db = db_index(obj)
 #' print(db)
 #' ------------------
@@ -30,9 +30,10 @@
 #' }
 #'
 db_index = function(obj){
-  # if(!is.categorisation(obj)){
-  #   stop("L'argument obj n'est pas de type categorisation")
-  # }
+  if(class(obj) != "objcharac"){
+    stop("The argument obj is not an objcharac")
+  }
+
   cluster = obj$grp #the clusters
   n = length(cluster) #cluster size
   k = length(unique(obj$grp))

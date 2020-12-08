@@ -1,7 +1,7 @@
 #' charclust: A package which evaluate a clustering's result
 #'
 #' This package provides functionality to characterize in a univariate or multivariate way the classes resulting from an automatic classification process.
-#' Its contain a strong graphic compenents and allows to calculate some score evaluation indices.
+#' Its contain a strong graphic component and allows to calculate some score evaluation indices.
 #'
 #' @author
 #' \describe{

@@ -13,7 +13,6 @@
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
-* checking serialization versions ... OK
 * checking whether package 'charclust' can be installed ... WARNING
 Found the following significant warnings:
   Warning: marque erronée (espace additionel ?) à charclust.Rd:14:45

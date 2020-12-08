@@ -2,7 +2,7 @@
 #'
 #' @param obj an object of type objcharac
 #'
-#' @return the cramers'V or the correlation for each variables and cluster depending on the variable's type
+#' @return the cramers'V or the correlation for each variable and cluster depending on the variable's type
 #' \describe{
 #'  \item{Case qualitative variables}{compute khi2, p-value, cramer's V}
 #'  \item{Case quantitative variables}{compute conditional means, correlation}
@@ -26,6 +26,11 @@
 #'
 #'
 charac_uni = function(obj){
+
+  if(class(obj) != "objcharac"){
+    stop("The argument obj is not an objcharac")
+  }
+
   if(length(obj$illus) != 0){my_data = cbind(obj$act, obj$illus)} else{my_data = obj$act}
   #apply for each column: output = list
   sortie_uni = lapply(my_data, calcul_uni, cluster=obj$grp)
@@ -40,7 +45,7 @@ calcul_uni = function(col, cluster){
     cl<-length(levels(as.factor(cluster)))-1
     test<-suppressWarnings(chisq.test(cluster,col)) #compute chisq test
     n<-length(col)
-    denom<- n*min(cl, f)
+    denom<- n*min(c(cl, f))
     khival<-test$statistic #chi-squared test statistic
     cramer<-sqrt(khival/denom) #cramer's v
     p_value<-test$p.value #p-value for the test

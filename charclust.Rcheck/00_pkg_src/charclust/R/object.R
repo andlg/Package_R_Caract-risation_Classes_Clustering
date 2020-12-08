@@ -1,6 +1,6 @@
 #' objcharac
 #'
-#' @param df a dataframe with all datas
+#' @param df a dataframe with all the data
 #' @param var_act a dataframe with active variables
 #' @param var_illus a dataframe with illustrative variables
 #' @param var_grp a dataframe or a list with the clusters
@@ -9,7 +9,7 @@
 #' \describe{
 #'  \item{$data}{dataframe}
 #'  \item{$act}{dataframe with active variables for clustering}
-#'  \item{$illus}{dataframe with illustrative variables}
+#'  \item{$illus}{dataframe with illustrative variables, default=NULL}
 #'  \item{$grp}{clusters for each observations}
 #' }
 #'
@@ -43,7 +43,6 @@ objcharac = function(df, var_act, var_illus=NULL, var_grp){
   instance$act = data.frame(var_act)
   instance$illus = data.frame(var_illus)
   instance$grp = var_grp
-  #instance$name_grp = sort(unique(var_grp))
 
   class(instance) = "objcharac"
 

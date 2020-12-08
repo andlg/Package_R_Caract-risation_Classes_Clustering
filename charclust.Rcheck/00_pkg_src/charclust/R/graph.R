@@ -4,7 +4,7 @@
 #'
 #'
 #' @param obj an object of type objcharac
-#' @param type a string indicating the graph wanted : "illus" : distribution for illustrative variables - "act" : boxplots for active variables - "pca" - factorial representation
+#' @param type a string indicating the graph wanted : "illus" : distribution for illustrative variables - "act" : boxplots for active variables - "pca" : factorial representation
 #' @param profile Optionnally, a string indicating which profile to see for the "illus" graph : "l" : line - "c": column. The default is "l"
 #'
 #' @import ggplot2 FactoMineR factoextra
@@ -31,7 +31,7 @@
 #' g_illus <- charac_graph(obj, type = "illus", profile = "l")
 #' print(g_illus)
 #' print(g_illus$domaine)
-#' #' #graph for illustrative variables, distribution of clusters foreach modality
+#' #graph for illustrative variables, distribution of clusters foreach modality
 #' g_illus2 <- charac_graph(obj, type = "illus", profile = "c")
 #' print(g_illus2)
 #' print(g_illus2$domaine)
@@ -48,6 +48,9 @@
 #'
 #' @export
 charac_graph<-function(obj,type,profile="l"){
+  if(class(obj) != "objcharac"){
+    stop("The argument obj is not an objcharac")
+  }
 
   df_uni<-cbind(obj$data,grp=obj$grp)
   if (type=="illus"){

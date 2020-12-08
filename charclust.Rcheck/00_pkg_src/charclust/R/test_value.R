@@ -42,9 +42,9 @@
 
 testval = function(obj){
 
-  # if(!is.categorisation(obj)){
-  #   stop("L'argument obj n'est pas de type categorisation")
-  # }
+  if(class(obj) != "objcharac"){
+    stop("The argument obj is not an objcharac")
+  }
 
   suppressWarnings(if(nrow(obj$illus)==0){my_data = obj$act} else{my_data = cbind(obj$act, obj$illus)})
   var_grp = obj$grp

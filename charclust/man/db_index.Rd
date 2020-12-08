@@ -22,7 +22,7 @@ Y = c(20, 23, 28, 15)
 cl = c(1, 1, 1, 2)
 data = as.data.frame(cbind(X, Y, cl))
 colnames(data) = c("X", "Y", "cluster")
-obj = categorisation(data, data[, -3], NULL, data$cluster)
+obj = objcharac(data, data[, -3], NULL, data$cluster)
 db = db_index(obj)
 print(db)
 ------------------

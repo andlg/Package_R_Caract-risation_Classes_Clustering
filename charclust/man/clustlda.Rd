@@ -13,7 +13,7 @@ clustlda(obj)
 \describe{
 \item{$coef_LDA}{coefficients of LDA}
 \item{$confusion_matrix}{groups predict by LDA VS clusters}
-\item{$eval}{interpretation of coeeficients}
+\item{$eval}{statistic F and p-value of Fisher test}
 }
 }
 \description{
