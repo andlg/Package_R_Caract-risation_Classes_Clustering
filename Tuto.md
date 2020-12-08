@@ -57,7 +57,7 @@ The sil function allows to compute the total silhouette coefficient of the parti
 
     ## [1] 0.5930815
 
-The global coefficient is close to 1 so we have a pretty good score. 
+The global coefficient is close to 1 so we have a pretty good score.  
 We can also compute the silhouette coefficient by group to compare their homogeneities.
 The groups with the strongest silhouette coefficients are the most homogeneous.
 
