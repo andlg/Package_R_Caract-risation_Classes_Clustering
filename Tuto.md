@@ -1,10 +1,9 @@
 
 # TUTORIAL CHARCLUST PACKAGE 
------
------
+
 
 ## Introduction
------
+
 
 The goal of this tutorial is to show how to use the charclust package and interpret the results. The dataset used is the “insertion_master” available in the package. It contains data on the occupational integration of master's graduates in France in 2012 (https://www.data.gouv.fr/fr/datasets/insertion-professionnelle-des-diplomes-de-master-en-universites-et-etablissements-assimil-0/).  
 After performing an automatic classification algorithm on the data, we are going to evaluate the quality of the results and to describe the clusters got using the charclust package.
